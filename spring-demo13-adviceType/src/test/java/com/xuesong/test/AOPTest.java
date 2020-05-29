@@ -22,7 +22,5 @@ public class AOPTest {
     @Test
     public void test01(){
         as.saveAccount();
-        as.deleteAccount();
-        as.updateAccount(1);
     }
 }
