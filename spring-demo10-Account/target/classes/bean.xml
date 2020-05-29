@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <!--配置代理的Service-->
+    <bean id="proxyAccountService" factory-bean="beanFactory" factory-method="getAccountService"></bean>
+
+    <!--配置BeanFactory-->
+    <bean id="beanFactory" class="com.xuesong.factory.BeanFactory">
+        <property name="accountService" ref="accountService"></property>
+        <property name="transactionManager" ref="TransactionManager"></property>
+    </bean>
+    <!--配置servie对象-->
+    <bean id="accountService" class="com.xuesong.service.imp.AccountServiceImp">
+        <property name="accountDao" ref="accountDao"></property>
+    </bean>
+
+    <bean id="TransactionManager" class="com.xuesong.utils.TransactionManager">
+        <property name="connetionUtil" ref="connectionUtil"></property>
+    </bean>
+
+    <!--配置dao对象-->
+    <bean id="accountDao" class="com.xuesong.dao.imp.AccountDaoImp">
+        <property name="runner" ref="runner"></property>
+
+        <property name="connetionUtil" ref="connectionUtil"></property>
+     </bean>
+
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype">
+        <!--注入数据源-->
+    </bean>
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!--连接数据库的必备信息-->
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/spring?characterEncoding=utf8"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value="123456"></property>
+    </bean>
+
+    <!--配置ConnectionUtil工具类-->
+    <bean id="connectionUtil" class="com.xuesong.utils.ConnetionUtil">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+</beans>

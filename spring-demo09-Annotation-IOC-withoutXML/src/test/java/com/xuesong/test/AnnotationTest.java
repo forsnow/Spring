@@ -5,8 +5,10 @@ import com.xuesong.domain.Account;
 import com.xuesong.service.AccountService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
@@ -24,16 +26,23 @@ import java.util.List;
  * 1.导入Spring整合junit的jar（Spring-test坐标）
  * 2.使用Junit提供的一个注解把原油的main方法替换了，替换成Spring提供的
  * 3.告知Spring的运行器，Spring和IOC是基于注解的还是XML的，并且说明位置信息
+ * @ContextConfiguration
+ *         location:指定xml文件的位置，加上classpath关键字，表示在类的路径下面
+ *         classes:指定注解类的位置
  *
+ * 当使用Spring5.x版本的时候 junit版本必须是4.12以上
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = SpringConfiguration.class)
 public class AnnotationTest {
+
+    @Autowired
+    private AccountService accountService;
 
     @Test
     public void TestfindAllAccount(){
-        ApplicationContext ac = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-        AccountService accountService = ac.getBean("accountService",AccountService.class);
+
         List<Account> allAccount = accountService.findAllAccount();
         for (Account account : allAccount) {
             System.out.println(account);
@@ -42,8 +51,7 @@ public class AnnotationTest {
 
     @Test
     public void TestfindAccountByID(){
-        ApplicationContext ac = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-        AccountService accountService = ac.getBean("accountService", AccountService.class);
+
         Account accountByID = accountService.findAccountByID(2);
         System.out.println(accountByID);
 
@@ -55,16 +63,13 @@ public class AnnotationTest {
         account.setName("uu");
         account.setMoney(2000f);
 
-        ApplicationContext ac = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-        AccountService accountService = ac.getBean("accountService", AccountService.class);
         accountService.saveAccount(account);
 
     }
 
     @Test
     public void TestdeleteAccount(){
-        ApplicationContext ac = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-        AccountService accountService = ac.getBean("accountService", AccountService.class);
+
         accountService.deleteAccount(4);
     }
 
