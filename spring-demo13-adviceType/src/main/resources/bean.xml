@@ -15,17 +15,24 @@
     <!--配置aop-->
     <aop:config>
         <!--配置切面-->
+
+        <!--配置切入点表达式 -->
+        <aop:pointcut id="pt1" expression="execution(* com.xuesong.service.imp.*.*(..))"></aop:pointcut>
         <aop:aspect id="logAdvice" ref="logger">
             <!--配置通知的类型，并且建立通知方法和切入点方法的关联-->
 
             <!--配置前置通知 在切入点方法执行之前执行-->
-            <aop:before method="BeforePrintLog" pointcut="execution(* com.xuesong.service.imp.*.*(..))"></aop:before>
+            <aop:before method="BeforePrintLog" pointcut-ref="pt1"></aop:before>
             <!--配置后置通知 无论切入点是否正常执行都会执行-->
-            <aop:after method="AfterPrintLog" pointcut="execution(* com.xuesong.service.imp.*.*(..))"></aop:after>
+            <aop:after method="AfterPrintLog" pointcut-ref="pt1"></aop:after>
             <!--配置返回通知 在切入点方法正常执行后执行-->
-            <aop:after-returning method="AfterReturningPrintLog" pointcut="execution(* com.xuesong.service.imp.*.*(..))"></aop:after-returning>
+            <aop:after-returning method="AfterReturningPrintLog" pointcut-ref="pt1" ></aop:after-returning>
             <!--配置异常通知 在切入点方法执行产生异常后执行-->
-            <aop:after-throwing method="AfterThrowingPrintLog" pointcut="execution(* com.xuesong.service.imp.*.*(..))"></aop:after-throwing>
+            <aop:after-throwing method="AfterThrowingPrintLog" pointcut-ref="pt1" ></aop:after-throwing>
+
+            <!--配置环绕通知 详细注释请看Logger类中-->
+            <aop:around method="AroundPrintLog" pointcut-ref="pt1"></aop:around>
+
 
         </aop:aspect>
     </aop:config>

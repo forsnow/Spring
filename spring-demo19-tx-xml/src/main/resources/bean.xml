@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <bean id="AccountDao" class="com.xuesong.dao.imp.AccountDaoImp">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--配置业务层-->
+    <bean id="AccountService" class="com.xuesong.service.imp.AccountServiceImp">
+        <property name="accountDao" ref="AccountDao"></property>
+    </bean>
+
+    <!--配置一个数据源-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/spring?characterEncoding=utf-8"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="123456"></property>
+    </bean>
+
+    <!--Spring中基于声明的事务控制配置步骤
+    1.配置事务管理器
+    2.配置事务的通知
+           此时我们引入事务的约束 tx名称空间和约束，同时也需要aop的
+           使用tx:advice标签配置事务通知
+           属性：
+             id：给事务通知起一个唯一标识
+             transaction-manager：给事务通知提供一个事务管理器引用
+
+    3.配置AOP中的通用切入点表达式
+
+
+
+    -->
+
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--配置事务的通知-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <!--配置事务的属性
+        isolation="" 用于指定事务的隔离级别 默认值是DEFAULT 表示使用数据库的隔离级别
+        no-rollback-for="" 用于指定一个异常，当产生该异常时，事务不回滚，产生其他异常时，事务回滚，没有默认值，任何异常都回滚。
+        propagation="" 用于指定事务的传播行为
+        read-only="" 指定超时时间。默认值为： -1。永不超时。
+        rollback-for="" 用于指定一个异常，当执行产生该异常时，事务回滚。产生其他异常，事务不回滚。没有默认值，任何异常都回滚。
+        timeout="-1" 指定超时时间。默认值为： -1。永不超时。
+
+        -->
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" read-only="false"/>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--配置AOP-->
+    <aop:config>
+
+        <!--配置切入点表达式-->
+        <aop:pointcut id="pt1" expression="execution(* com.xuesong.service.imp.*.*(..))"/>
+
+        <!--建立切入点表达式和事务通知的对应关系-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pt1"></aop:advisor>
+        
+    </aop:config>
+
+
+</beans>
